@@ -1,0 +1,6 @@
+{
+  "name": "BurnIn AI - Component Screening Intelligence",
+  "description": "ISRO Problem Statement 26170: AI-powered anomaly detection in component burn-in and screening for latent defect identification beyond static pass/fail limits.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
