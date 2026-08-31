@@ -25,21 +25,34 @@ Because $44.6\,\mu\text{A} < 50.0\,\mu\text{A}$, **conventional screening marks 
 ### 1. Temporal Drift Rate & Non-Linear Slope Analysis
 Rather than evaluating instantaneous values $P(t)$, the system computes the first and second derivatives of electrical parameters over discrete burn-in checkpoints ($t \in \{0\text{h}, 24\text{h}, 96\text{h}, 168\text{h}\}$):
 
-$$\text{Drift Rate } (\%) = \left( \frac{P_{168\text{h}} - P_{0\text{h}}}{P_{0\text{h}}} \right) \times 100$$
+```text
+                               ( P_168h - P_0h )
+Drift Rate (ΔP / P_0) [%]  =  ------------------- × 100
+                                    P_0h
+```
 
-$$\text{Acceleration Index } (\alpha) = \frac{\Delta P_{96\text{h} \to 168\text{h}}}{\Delta P_{0\text{h} \to 24\text{h}}}$$
+```text
+                                 ΔP_(96h → 168h)
+Acceleration Index (α)     =  ---------------------
+                                 ΔP_(0h → 24h)
+```
 
 Components exhibiting $\alpha > 2.5$ or exponential growth patterns $P(t) \propto e^{\lambda t}$ are flagged for latent dielectric breakdown risks.
 
 ### 2. Multi-Parametric Anomaly Scoring
 The platform evaluates multi-dimensional parameter vectors for each component:
-$$\mathbf{X}_i = \left[ I_{leak}, I_{DDQ}, t_{pd}, V_{th}, R_{ON}, \Delta I_{leak}, \Delta I_{DDQ}, \Delta t_{pd} \right]^T$$
+
+$$\mathbf{X}_i = \begin{bmatrix} I_{\text{leak}} & I_{\text{DDQ}} & t_{\text{pd}} & V_{\text{th}} & R_{\text{ON}} & \Delta I_{\text{leak}} & \Delta I_{\text{DDQ}} & \Delta t_{\text{pd}} \end{bmatrix}^T$$
 
 - **Mahalanobis Distance ($D_M$)**: Evaluates component divergence from the lot covariance matrix $\mathbf{\Sigma}$:
+  
   $$D_M(\mathbf{X}_i) = \sqrt{(\mathbf{X}_i - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X}_i - \boldsymbol{\mu})}$$
-- **Isolation Forest & Ensemble Scores**: Partitions feature spaces to isolate out-of-distribution outliers without assuming normal distribution.
-- **Composite Anomaly Score ($S_{anomaly}$)**: Normalized from $0$ to $100$:
-  $$S_{anomaly} = w_1 \cdot \text{Norm}(D_M) + w_2 \cdot \text{Drift}_{\%} + w_3 \cdot \alpha + w_4 \cdot S_{lot\_zscore}$$
+
+- **Isolation Forest & Ensemble Scores**: Partitions high-dimensional feature spaces to isolate out-of-distribution outliers without assuming normal distribution.
+
+- **Composite Anomaly Score ($S_{\text{anomaly}}$)**: Normalized from 0 to 100:
+  
+  $$S_{\text{anomaly}} = w_1 \cdot \text{Norm}(D_M) + w_2 \cdot \text{Drift}_{\text{norm}} + w_3 \cdot \alpha + w_4 \cdot Z_{\text{lot}}$$
 
 ### 3. Risk Stratification Tiers
 
